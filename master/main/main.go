@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/yenkeia/cron/master"
 	"runtime"
+	"time"
 )
 
 var (
@@ -50,6 +51,9 @@ func main() {
 	}
 
 	// 正常退出
+	for {
+		time.Sleep(1 * time.Second)
+	}
 	return
 
 ERR:

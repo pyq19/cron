@@ -26,6 +26,8 @@ func handleJobSave(resp http.ResponseWriter, req *http.Request) {
 		err     error
 		postJob string
 		job     common.Job
+		oldJob  *common.Job
+		bytes   []byte
 	)
 	// 解析 post 表单
 	if err = req.ParseForm(); err != nil {
@@ -38,8 +40,20 @@ func handleJobSave(resp http.ResponseWriter, req *http.Request) {
 		goto ERR
 	}
 	// 保存 job，把 job 传到 jobMgr，再由 jobMgr 传到 etcd
+	if oldJob, err = G_jobMgr.SaveJob(&job); err != nil {
+		goto ERR
+	}
+	// 返回正常应答 ({"errno": 0, "msg": "", "data": {...}})
+	if bytes, err = common.BuildResponse(0, "success", oldJob); err == nil {
+		resp.Write(bytes)
+	}
+	return
 
 ERR:
+	// 返回异常应答
+	if bytes, err = common.BuildResponse(-1, err.Error(), nil); err == nil {
+		resp.Write(bytes)
+	}
 }
 
 // 初始化服务
