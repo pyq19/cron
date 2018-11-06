@@ -1,6 +1,8 @@
 package master
 
 import (
+	"encoding/json"
+	"github.com/yenkeia/cron/common"
 	"net"
 	"net/http"
 	"strconv"
@@ -18,10 +20,26 @@ var (
 )
 
 // 保存任务接口
-func handleJobSave(w http.ResponseWriter, r *http.Request) {
-	// 任务保存到 etcd 中
+// post job={"name": "job1", "command": "echo hello", "cronExpr": "* * * * *"}
+func handleJobSave(resp http.ResponseWriter, req *http.Request) {
+	var (
+		err     error
+		postJob string
+		job     common.Job
+	)
+	// 解析 post 表单
+	if err = req.ParseForm(); err != nil {
+		goto ERR
+	}
+	// 取表单中的 job 字段
+	postJob = req.PostForm.Get("job")
+	// 反序列化 job
+	if err = json.Unmarshal([]byte(postJob), &job); err != nil {
+		goto ERR
+	}
+	// 保存 job，把 job 传到 jobMgr，再由 jobMgr 传到 etcd
 
-
+ERR:
 }
 
 // 初始化服务
