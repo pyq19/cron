@@ -44,7 +44,8 @@ func (jobMgr *JobMgr) watchJobs() (err error) {
 		// 反序列化 json 得到 job
 		if job, err = common.UnpackJob(kvpair.Value); err == nil { // 反解成功
 			jobEvent = common.BuildJobEvent(common.JOB_EVENT_SAVE, job)
-			// TODO: 把 jobEvent 同步给 scheduler (调度协程)
+			// 同步给 scheduler (调度协程)
+			G_scheduler.PushJobEvent(jobEvent)
 		}
 	}
 
@@ -52,7 +53,7 @@ func (jobMgr *JobMgr) watchJobs() (err error) {
 	go func() { // 监听协程
 		watchStartRevision = getResp.Header.Revision + 1 // 从 GET 时刻的后续版本开始监听变化
 		// 监听 /cron/jobs/ 目录的后续变化
-		watchChan = jobMgr.watcher.Watch(context.TODO(), common.JOB_SAVE_DIR, clientv3.WithRev(watchStartRevision))
+		watchChan = jobMgr.watcher.Watch(context.TODO(), common.JOB_SAVE_DIR, clientv3.WithRev(watchStartRevision), clientv3.WithPrefix())
 		// 处理监听事件
 		for watchResp = range watchChan {
 			for _, watchEvent = range watchResp.Events {
@@ -70,8 +71,8 @@ func (jobMgr *JobMgr) watchJobs() (err error) {
 					// 构建*删除*事件
 					jobEvent = common.BuildJobEvent(common.JOB_EVENT_DELETE, job)
 				}
-				// TODO: 推给 scheduler
-				// G_Scheduler.PushJobEvent(jobEvent)
+				// 变化推给 scheduler
+				G_scheduler.PushJobEvent(jobEvent)
 			}
 		}
 	}()
