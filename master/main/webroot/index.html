@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Golang分布式Crontab</title>
@@ -8,66 +9,111 @@
     <script src="https://cdn.bootcss.com/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <link href="https://cdn.bootcss.com/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 <body>
-
-<div class="container-fluid">
-    <!-- 页头 -->
-    <div class="row">
-        <div class="col-md-12">
-            <div class="page-header">
-                <h1>管理后台
-                    <small>golang 分布式 crontab</small>
-                </h1>
-            </div>
-        </div>
-    </div>
-
-    <!-- 功能按钮 -->
-    <div class="row">
-        <div class="col-md-12">
-            <button type="button" class="btn btn-primary">新建任务</button>
-        </div>
-    </div>
-
-    <!-- 任务列表 -->
-    <div class="row">
-        <div class="col-md-12">
-            <div class="panel panel-default" style="margin-top: 20px">
-                <div class="panel-body">
-                    <table class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th>任务名称</th>
-                            <th>shell命令</th>
-                            <th>cron表达式</th>
-                            <th>任务操作</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <!-- 这是一个任务 -->
-                        <tr>
-                            <td class="job-name">job1</td>
-                            <td class="job-command">echo hello</td>
-                            <td class="job-cronExpr">* * * * *</td>
-                            <td>
-                                <!-- 按钮组 -->
-                                <div class="btn-toolbar">
-                                    <button class="btn btn-info">编辑</button>
-                                    <button class="btn btn-danger">删除</button>
-                                    <button class="btn btn-warning">强杀</button>
-                                    <!-- <button class="btn btn-info">日志</button> -->
-                                </div>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+    <div class="container-fluid">
+        <!-- 页头 -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="page-header">
+                    <h1>管理后台
+                        <small>golang 分布式 crontab</small>
+                    </h1>
                 </div>
             </div>
         </div>
 
+        <!-- 功能按钮 -->
+        <div class="row">
+            <div class="col-md-12">
+                <button type="button" class="btn btn-primary">新建任务</button>
+            </div>
+        </div>
+
+        <!-- 任务列表 -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default" style="margin-top: 20px">
+                    <div class="panel-body">
+                        <table id="job-list" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>任务名称</th>
+                                    <th>shell命令</th>
+                                    <th>cron表达式</th>
+                                    <th>任务操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- 这是一个任务 -->
+                                <!-- <tr>
+                                    <td class="job-name">job1</td>
+                                    <td class="job-command">echo hello</td>
+                                    <td class="job-cronExpr">* * * * *</td>
+                                    <td>
+                                        按钮组
+                                        <div class="btn-toolbar">
+                                            <button class="btn btn-info edit-job">编辑</button>
+                                            <button class="btn btn-danger delete-job">删除</button>
+                                            <button class="btn btn-warning kill-job">强杀</button>
+                                        </div>
+                                    </td>
+                                </tr> -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
+    <script>
+        $(document).ready(function () {
+            // 1. 绑定按钮的时间处理函数
+            $('#job-list').on('click', ".edit-job", function (event) {
+                console.log('编辑按钮');
+            })
+            $('#job-list').on('click', ".delete-job", function (event) {
+                console.log('删除按钮');
+            })
+            $('#job-list').on('click', ".kill-job", function (event) {
+                console.log('强杀按钮');
+            })
 
-</div>
-
+            // 2. 定义一个函数用于刷新任务列表
+            function rebuildJobList() {
+                // /job/list
+                $.ajax({
+                    url: '/job/list',
+                    dataType: 'json',
+                    success: function (resp) {
+                        if (resp.errno != 0) {   // 服务端出错了
+                            console.log(resp)
+                            return
+                        }
+                        // 清理列表
+                        $('#job-list tbody').empty();
+                        // 遍历任务，填充 table
+                        var jobList = resp.data
+                        for (var i = 0; i < jobList.length; ++i) {
+                            var job = jobList[i];
+                            var tr = $('<tr>');
+                            tr.append($('<td class="job-name">').html(job.name));
+                            tr.append($('<td class="job-command">').html(job.command));
+                            tr.append($('<td class="job-cronExpr">').html(job.cronExpr));
+                            var toolbar = $('<div class="btn-toolbar">')
+                                .append('<button class="btn btn-info edit-job">编辑</button>')
+                                .append('<button class="btn btn-danger edit-job">删除</button>')
+                                .append('<button class="btn btn-warning edit-job">强杀</button>');
+                            tr.append($('<td>').append(toolbar));
+                            $('#job-list tbody').append(tr);
+                        }
+                    }
+                })
+            }
+            rebuildJobList();
+        })
+    </script>
 </body>
+
 </html>
