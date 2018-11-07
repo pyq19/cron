@@ -87,7 +87,15 @@
                 })
             })
             $('#job-list').on('click', ".kill-job", function (event) {
-                console.log('强杀按钮');
+                var jobName = $(this).parent('tr').children('.job-name').text();
+                $.ajax({
+                    url: '/job/kill',
+                    type: 'post',
+                    dataType: 'json',
+                    data: { name: jobName },
+                    complete: function () {
+                    }
+                })
             })
 
             // 2. 定义一个函数用于刷新任务列表
