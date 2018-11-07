@@ -1,6 +1,9 @@
 package common
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"strings"
+)
 
 // 定时任务
 type Job struct {
@@ -14,6 +17,12 @@ type Response struct {
 	Errno int         `json:"errno"`
 	Msg   string      `json:"msg"`
 	Data  interface{} `json:"data"`
+}
+
+// 变化事件
+type JobEvent struct {
+	EventType int // SAVE DELETE
+	Job       *Job
 }
 
 // 应答方法
@@ -41,4 +50,19 @@ func UnpackJob(value []byte) (ret *Job, err error) {
 	}
 	ret = job
 	return
+}
+
+// 从 etcd 的 key 提取任务名
+// /cron/jobs/job10	中 抹掉 /cron/jobs/ ，返回 job10
+func ExtractJobName(jobKey string) (string) {
+	return strings.TrimPrefix(jobKey, JOB_SAVE_DIR)
+}
+
+// 任务变化事件有两种 1) 更新任务  2）删除任务
+func BuildJobEvent(eventType int, job *Job) (jobEvent *JobEvent) {
+	return &JobEvent{
+		EventType: eventType,
+		Job:       job,
+	}
+
 }
