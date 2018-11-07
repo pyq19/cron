@@ -75,6 +75,16 @@
             })
             $('#job-list').on('click', ".delete-job", function (event) {
                 console.log('删除按钮');
+                var jobName = $(this).parents('tr').children('.job-name').text();
+                $.ajax({
+                    url: '/job/delete',
+                    type: 'post',
+                    dataType: 'json',
+                    data: { name: jobName },
+                    complete: function () {
+                        window.location.reload();
+                    }
+                })
             })
             $('#job-list').on('click', ".kill-job", function (event) {
                 console.log('强杀按钮');
@@ -103,8 +113,8 @@
                             tr.append($('<td class="job-cronExpr">').html(job.cronExpr));
                             var toolbar = $('<div class="btn-toolbar">')
                                 .append('<button class="btn btn-info edit-job">编辑</button>')
-                                .append('<button class="btn btn-danger edit-job">删除</button>')
-                                .append('<button class="btn btn-warning edit-job">强杀</button>');
+                                .append('<button class="btn btn-danger delete-job">删除</button>')
+                                .append('<button class="btn btn-warning kill-job">强杀</button>');
                             tr.append($('<td>').append(toolbar));
                             $('#job-list tbody').append(tr);
                         }
