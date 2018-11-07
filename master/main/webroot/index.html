@@ -47,18 +47,18 @@
                             <tbody>
                                 <!-- 这是一个任务 -->
                                 <!-- <tr>
-                                    <td class="job-name">job1</td>
-                                    <td class="job-command">echo hello</td>
-                                    <td class="job-cronExpr">* * * * *</td>
-                                    <td>
-                                        按钮组
-                                        <div class="btn-toolbar">
-                                            <button class="btn btn-info edit-job">编辑</button>
-                                            <button class="btn btn-danger delete-job">删除</button>
-                                            <button class="btn btn-warning kill-job">强杀</button>
-                                        </div>
-                                    </td>
-                                </tr> -->
+                            <td class="job-name">job1</td>
+                            <td class="job-command">echo hello</td>
+                            <td class="job-cronExpr">* * * * *</td>
+                            <td>
+                                按钮组
+                                <div class="btn-toolbar">
+                                    <button class="btn btn-info edit-job">编辑</button>
+                                    <button class="btn btn-danger delete-job">删除</button>
+                                    <button class="btn btn-warning kill-job">强杀</button>
+                                </div>
+                            </td>
+                        </tr> -->
                             </tbody>
                         </table>
                     </div>
@@ -67,12 +67,52 @@
 
         </div>
     </div>
+
+    <!-- 模态框 position:fixed -->
+    <div id="edit-modal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">编辑任务</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="edit-name">任务名称</label>
+                            <input type="text" class="form-control" id="edit-name" placeholder="任务名称" />
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-command">shell命令</label>
+                            <input type="text" class="form-control" id="edit-command" placeholder="shell命令" />
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-cronExpr">cron表达式</label>
+                            <input type="text" class="form-control" id="edit-cronExpr" placeholder="cron表达式" />
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" id="save-job">保存</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
     <script>
         $(document).ready(function () {
             // 1. 绑定按钮的时间处理函数
             $('#job-list').on('click', ".edit-job", function (event) {
-                console.log('编辑按钮');
-            })
+                // 取出当前 job 的信息，赋值给模态框的 input
+                $('#edit-name').val($(this).parents('tr').children('.job-name').text());
+                $('#edit-command').val($(this).parents('tr').children('.job-command').text());
+                $('#edit-cronExpr').val($(this).parents('tr').children('.job-cronExpr').text());
+
+                // 弹出模态框
+                $('#edit-modal').modal('show');
+            });
             $('#job-list').on('click', ".delete-job", function (event) {
                 console.log('删除按钮');
                 var jobName = $(this).parents('tr').children('.job-name').text();
@@ -85,7 +125,7 @@
                         window.location.reload();
                     }
                 })
-            })
+            });
             $('#job-list').on('click', ".kill-job", function (event) {
                 var jobName = $(this).parent('tr').children('.job-name').text();
                 $.ajax({
@@ -96,7 +136,25 @@
                     complete: function () {
                     }
                 })
-            })
+            });
+
+            // 保存任务
+            $('#save-job').on('click', function () {
+                var jobInfo = {
+                    name: $('#edit-name').val(),
+                    command: $('#edit-command').val(),
+                    cronExpr: $('#edit-cronExpr').val()
+                };
+                $.ajax({
+                    url: '/job/save',
+                    type: 'post',
+                    dataType: 'json',
+                    data: { job: JSON.stringify(jobInfo) },
+                    complete: function () {
+                        window.location.reload();
+                    }
+                })
+            });
 
             // 2. 定义一个函数用于刷新任务列表
             function rebuildJobList() {
@@ -129,6 +187,7 @@
                     }
                 })
             }
+
             rebuildJobList();
         })
     </script>
