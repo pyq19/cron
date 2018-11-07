@@ -26,7 +26,7 @@
         <!-- 功能按钮 -->
         <div class="row">
             <div class="col-md-12">
-                <button type="button" class="btn btn-primary">新建任务</button>
+                <button type="button" class="btn btn-primary" id="new-job">新建任务</button>
             </div>
         </div>
 
@@ -104,6 +104,7 @@
     <script>
         $(document).ready(function () {
             // 1. 绑定按钮的时间处理函数
+            // 编辑任务
             $('#job-list').on('click', ".edit-job", function (event) {
                 // 取出当前 job 的信息，赋值给模态框的 input
                 $('#edit-name').val($(this).parents('tr').children('.job-name').text());
@@ -113,6 +114,7 @@
                 // 弹出模态框
                 $('#edit-modal').modal('show');
             });
+            // 删除任务
             $('#job-list').on('click', ".delete-job", function (event) {
                 console.log('删除按钮');
                 var jobName = $(this).parents('tr').children('.job-name').text();
@@ -126,6 +128,7 @@
                     }
                 })
             });
+            // 杀死任务
             $('#job-list').on('click', ".kill-job", function (event) {
                 var jobName = $(this).parent('tr').children('.job-name').text();
                 $.ajax({
@@ -154,6 +157,14 @@
                         window.location.reload();
                     }
                 })
+            });
+
+            // 新建任务
+            $('#new-job').on('click', function () {
+                $('#edit-name').val("");
+                $('#edit-command').val("");
+                $('#edit-cronExpr').val("");
+                $('#edit-modal').modal('show');
             });
 
             // 2. 定义一个函数用于刷新任务列表
