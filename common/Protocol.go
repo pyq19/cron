@@ -52,6 +52,11 @@ type JobLog struct {
 	EndTime      int64  `bson:"endTime"`      // 任务执行结束时间
 }
 
+// 日志批次
+type LogBatch struct {
+	Logs []interface{} // 多条日志
+}
+
 // HTTP 接口应答
 type Response struct {
 	Errno int         `json:"errno"`

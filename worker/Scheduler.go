@@ -127,7 +127,8 @@ func (scheduler Scheduler) handleJobResult(jobResult *common.JobExecuteResult) {
 		} else {
 			jobLog.Err = ""
 		}
-		// TODO 存到 mongodb
+		// 存到 mongodb
+		G_logSink.Append(jobLog)
 	}
 }
 

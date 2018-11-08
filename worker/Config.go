@@ -15,6 +15,8 @@ type Config struct {
 	MongodbPass          string   `json:"mongodbPass"`
 	MongodbTimeout       int      `json:"mongodbTimeout"`
 	MongodbAuthMechanism string   `json:"mongodbAuthMechanism"`
+	JobLogBatchSize      int      `json:"jobLogBatchSize"`
+	JobLogCommitTimeout  int      `json:"jobLogCommitTimeout"`
 }
 
 var G_config *Config
