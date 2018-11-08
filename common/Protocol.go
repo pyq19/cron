@@ -21,6 +21,13 @@ type JobSchedulePlan struct {
 	NextTime time.Time            // 下次调度时间
 }
 
+// 任务执行状态 (如果任务执行，则记录状态
+type JobExecuteInfo struct {
+	Job      *Job      // 任务信息
+	PlanTime time.Time // 理论上的调度时间
+	RealTime time.Time // 实际的调度时间
+}
+
 // HTTP 接口应答
 type Response struct {
 	Errno int         `json:"errno"`
@@ -89,6 +96,16 @@ func BuildJobSchedulePlan(job *Job) (jobSchedulePlan *JobSchedulePlan, err error
 		Job:      job,
 		Expr:     expr,
 		NextTime: expr.Next(time.Now()),
+	}
+	return
+}
+
+// 构造任务执行状态信息 (传入执行计划，因为执行计划过期了，所以要生成执行状态
+func BuildJobExecuteInfo(jobSchedulePlan *JobSchedulePlan) (jobExecuteInfo *JobExecuteInfo) {
+	jobExecuteInfo = &JobExecuteInfo{
+		Job:      jobSchedulePlan.Job,
+		PlanTime: jobSchedulePlan.NextTime, // 计算调度时间
+		RealTime: time.Now(),               // 真实调度时间
 	}
 	return
 }
