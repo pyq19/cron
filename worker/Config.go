@@ -7,13 +7,14 @@ import (
 
 // 配置结构体
 type Config struct {
-	EtcdEndpoints     []string `json:"etcdEndpoints"`
-	EtcdDialTimeout   int      `json:"etcdDialTimeout"`
-	MongodbURI        string   `json:"mongodbUri"`
-	MongodbAuthSource string   `json:"mongodbAuthSource"`
-	MongodbUser       string   `json:"mongodbUser"`
-	MongodbPass       string   `json:"mongodbPass"`
-	MongodbTimeout    int      `json:"mongodbTimeout"`
+	EtcdEndpoints        []string `json:"etcdEndpoints"`
+	EtcdDialTimeout      int      `json:"etcdDialTimeout"`
+	MongodbURI           string   `json:"mongodbUri"`
+	MongodbAuthSource    string   `json:"mongodbAuthSource"`
+	MongodbUser          string   `json:"mongodbUser"`
+	MongodbPass          string   `json:"mongodbPass"`
+	MongodbTimeout       int      `json:"mongodbTimeout"`
+	MongodbAuthMechanism string   `json:"mongodbAuthMechanism"`
 }
 
 var G_config *Config

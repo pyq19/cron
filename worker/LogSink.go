@@ -40,11 +40,17 @@ func InitLogSink() (err error) {
 		clientOptions *options.ClientOptions
 	)
 	clientOptions = options.Client()
-	clientOptions.SetAuth(options.Credential{AuthSource: G_config.MongodbAuthSource, Username: G_config.MongodbUser, Password: G_config.MongodbPass})
+	clientOptions.SetAuth(options.Credential{
+		AuthMechanism: G_config.MongodbAuthMechanism,
+		AuthSource:    G_config.MongodbAuthSource,
+		Username:      G_config.MongodbUser,
+		Password:      G_config.MongodbPass,
+	})
 	clientOptions.SetConnectTimeout(time.Duration(G_config.MongodbTimeout) * time.Millisecond)
 	if client, err = mongo.Connect(context.TODO(), G_config.MongodbURI, clientOptions); err != nil {
 		return
 	}
+	//database = client.Database("cron")
 	G_logSink = &LogSink{
 		client:        client,
 		logCollection: client.Database("cron").Collection("log"),
