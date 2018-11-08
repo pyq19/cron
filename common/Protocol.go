@@ -28,6 +28,15 @@ type JobExecuteInfo struct {
 	RealTime time.Time // 实际的调度时间
 }
 
+// 任务执行结果
+type JobExecuteResult struct {
+	ExecuteInfo *JobExecuteInfo // 执行状态
+	Output      []byte          // 脚本输出
+	Err         error           // 脚本错误原因
+	StartTime   time.Time       // 启动时间
+	EndTime     time.Time       // 结束时间
+}
+
 // HTTP 接口应答
 type Response struct {
 	Errno int         `json:"errno"`
