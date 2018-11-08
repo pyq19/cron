@@ -22,6 +22,8 @@ func (scheduler *Scheduler) handleJobEvent(jobEvent *common.JobEvent) {
 		jobSchedulePlan *common.JobSchedulePlan
 		jobExisted      bool
 		err             error
+		jobExecuteInfo  *common.JobExecuteInfo
+		jobExecuting    bool
 	)
 	//TODO: 这里可以优化?，即每次修改 jobPlanTable 后，重新计算调度时间 schedule.TrySchedule()
 	switch jobEvent.EventType {
@@ -33,6 +35,11 @@ func (scheduler *Scheduler) handleJobEvent(jobEvent *common.JobEvent) {
 	case common.JOB_EVENT_DELETE: // 删除任务事件
 		if jobSchedulePlan, jobExisted = scheduler.jobPlanTable[jobEvent.Job.Name]; jobExisted {
 			delete(scheduler.jobPlanTable, jobEvent.Job.Name)
+		}
+	case common.JOB_EVENT_KILL: // 强杀任务事件
+		// 取消 Command 执行
+		if jobExecuteInfo, jobExecuting = scheduler.jobExecutingTable[jobEvent.Job.Name]; jobExecuting {
+			jobExecuteInfo.CancelFunc() // 触发 command 杀死 shell 子进程，任务得到退出
 		}
 	}
 }

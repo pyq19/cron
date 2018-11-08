@@ -1,8 +1,8 @@
 package worker
 
 import (
-	"context"
 	"github.com/yenkeia/cron/common"
+	"math/rand"
 	"os/exec"
 	"time"
 )
@@ -31,7 +31,8 @@ func (executor *Executor) ExecuteJob(info *common.JobExecuteInfo) {
 		// 记录任务开始时间
 		result.StartTime = time.Now()
 		// 上锁
-		err = jobLock.TryLock();
+		time.Sleep(time.Duration(rand.Intn(1000)) * time.Millisecond) // 随机睡眠1000毫秒，让不同worker都能抢到锁
+		err = jobLock.TryLock()
 		defer jobLock.Unlock()
 		if err != nil { // 有 err 代表上锁失败
 			result.Err = err
@@ -40,7 +41,7 @@ func (executor *Executor) ExecuteJob(info *common.JobExecuteInfo) {
 			// 上锁成功后，重置任务启动时间
 			result.StartTime = time.Now()
 			// 执行 shell 命令
-			cmd = exec.CommandContext(context.TODO(), "/bin/bash", "-c", info.Job.Command)
+			cmd = exec.CommandContext(info.CancelCtx, "/bin/bash", "-c", info.Job.Command)
 			// 执行并捕获输出
 			output, err = cmd.CombinedOutput()
 			// 记录任务结束时间

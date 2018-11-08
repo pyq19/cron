@@ -130,7 +130,7 @@
             });
             // 杀死任务
             $('#job-list').on('click', ".kill-job", function (event) {
-                var jobName = $(this).parent('tr').children('.job-name').text();
+                var jobName = $(this).parents('tr').children('.job-name').text();
                 $.ajax({
                     url: '/job/kill',
                     type: 'post',

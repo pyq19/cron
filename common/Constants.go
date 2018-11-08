@@ -13,4 +13,5 @@ const (
 	// 保存任务事件类型
 	JOB_EVENT_SAVE   = 1 // 保存
 	JOB_EVENT_DELETE = 2 // 删除
+	JOB_EVENT_KILL   = 3 // 强杀
 )
