@@ -102,11 +102,33 @@ func (scheduler *Scheduler) TrySchedule() (scheduleAfter time.Duration) {
 
 // 处理任务结果
 func (scheduler Scheduler) handleJobResult(jobResult *common.JobExecuteResult) {
+	var (
+		jobLog *common.JobLog
+	)
 	// 删除 jobExecutingTable 中执行状态
 	delete(scheduler.jobExecutingTable, jobResult.ExecuteInfo.Job.Name)
 	fmt.Println("		任务执行完成:", jobResult.ExecuteInfo.Job.Name)
 	fmt.Println("		Output:", string(jobResult.Output))
 	fmt.Println("		Error:", jobResult.Err)
+	// 生成执行日志
+	if jobResult.Err != common.ERR_LOCK_ALREADY_REQUIRED {
+		// 忽略因为锁被占用的错误
+		jobLog = &common.JobLog{
+			JobName:      jobResult.ExecuteInfo.Job.Name,
+			Command:      jobResult.ExecuteInfo.Job.Command,
+			Output:       string(jobResult.Output),
+			PlanTime:     jobResult.ExecuteInfo.PlanTime.UnixNano() / 1000 / 1000,
+			ScheduleTime: jobResult.ExecuteInfo.RealTime.UnixNano() / 1000 / 1000,
+			StartTime:    jobResult.StartTime.UnixNano() / 1000 / 1000,
+			EndTime:      jobResult.EndTime.UnixNano() / 1000 / 1000,
+		}
+		if jobResult.Err != nil {
+			jobLog.Err = jobResult.Err.Error()
+		} else {
+			jobLog.Err = ""
+		}
+		// TODO 存到 mongodb
+	}
 }
 
 // 调度协程
