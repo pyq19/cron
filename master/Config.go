@@ -7,12 +7,18 @@ import (
 
 // 配置结构体
 type Config struct {
-	ApiPort         int      `json:"apiPort"`
-	ApiReadTimeout  int      `json:"apiReadTimeout"`
-	ApiWriteTimeout int      `json:"apiWriteTimeout"`
-	EtcdEndpoints   []string `json:"etcdEndpoints"`
-	EtcdDialTimeout int      `json:"etcdDialTimeout"`
-	Webroot         string   `json:"webroot"`
+	ApiPort              int      `json:"apiPort"`
+	ApiReadTimeout       int      `json:"apiReadTimeout"`
+	ApiWriteTimeout      int      `json:"apiWriteTimeout"`
+	EtcdEndpoints        []string `json:"etcdEndpoints"`
+	EtcdDialTimeout      int      `json:"etcdDialTimeout"`
+	Webroot              string   `json:"webroot"`
+	MongodbAuthMechanism string   `json:"mongodbAuthMechanism"`
+	MongodbAuthSource    string   `json:"mongodbAuthSource"`
+	MongodbUser          string   `json:"mongodbUser"`
+	MongodbPass          string   `json:"mongodbPass"`
+	MongodbTimeout       int      `json:"mongodbTimeout"`
+	MongodbURI           string   `json:"mongodbUri"`
 }
 
 var G_config *Config
