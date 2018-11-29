@@ -3,9 +3,10 @@ package common
 import (
 	"context"
 	"encoding/json"
-	"github.com/gorhill/cronexpr"
 	"strings"
 	"time"
+
+	"github.com/gorhill/cronexpr"
 )
 
 // 定时任务
@@ -42,14 +43,14 @@ type JobExecuteResult struct {
 
 // 任务执行日志
 type JobLog struct {
-	JobName      string `bson:"jobName"`
-	Command      string `bson:"command"`
-	Err          string `bson:"err"`
-	Output       string `bson:"output"`       // 脚本输出
-	PlanTime     int64  `bson:"planTime"`     // 计划开始事件
-	ScheduleTime int64  `bson:"scheduleTime"` // 实际调度事件
-	StartTime    int64  `bson:"startTime"`    // 任务执行开始时间
-	EndTime      int64  `bson:"endTime"`      // 任务执行结束时间
+	JobName      string `json:"jobName" bson:"jobName"`
+	Command      string `json:"command" bson:"command"`
+	Err          string `json:"err" bson:"err"`
+	Output       string `json:"output" bson:"output"`             // 脚本输出
+	PlanTime     int64  `json:"planTime" bson:"planTime"`         // 计划开始事件
+	ScheduleTime int64  `json:"scheduleTime" bson:"scheduleTime"` // 实际调度事件
+	StartTime    int64  `json:"startTime" bson:"startTime"`       // 任务执行开始时间
+	EndTime      int64  `json:"endTime" bson:"endTime"`           // 任务执行结束时间
 }
 
 // 日志批次
@@ -109,12 +110,12 @@ func UnpackJob(value []byte) (ret *Job, err error) {
 
 // 从 etcd 的 key 提取任务名
 // /cron/jobs/job10	中 抹掉 /cron/jobs/ ，返回 job10
-func ExtractJobName(jobKey string) (string) {
+func ExtractJobName(jobKey string) string {
 	return strings.TrimPrefix(jobKey, JOB_SAVE_DIR)
 }
 
 // 从 /cron/killer/job10 提取 job10
-func ExtractKillerName(killerKey string) (string) {
+func ExtractKillerName(killerKey string) string {
 	return strings.TrimPrefix(killerKey, JOB_KILLER_DIR)
 }
 
